@@ -80,10 +80,20 @@ exports.createProductValidator = [
       const subCategories = await SubCategory.find({
         category: req.body.category,
       });
+
+      // Get subCategories IDs
       const subCategoriesIds = subCategories.map((subCategory) =>
         subCategory._id.toString()
       );
-      console.log(subCategoriesIds);
+
+      // Check if subCategories IDs are included in subCategories IDs
+      const checker = value.every((subCategory) =>
+        subCategoriesIds.includes(subCategory)
+      );
+      if (!checker) {
+        throw new Error("SubCategory not found in this category");
+      }
+      return true;
     }),
   check("brands").optional().isMongoId().withMessage("Invalid brand ID format"),
   check("ratingsAverage")
