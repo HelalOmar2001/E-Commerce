@@ -20,6 +20,7 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(express.static(`${__dirname}/uploads`));
 
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 

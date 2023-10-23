@@ -10,12 +10,22 @@ router.use("/:id/subCategories", subCategoryRouter);
 router
   .route("/")
   .get(categoryController.getCategories)
-  .post(validators.createCategoryValidator, categoryController.createCategory);
+  .post(
+    categoryController.uploadCategoryImage,
+    categoryController.resizeImage,
+    validators.createCategoryValidator,
+    categoryController.createCategory
+  );
 
 router
   .route("/:id")
   .get(validators.getCategoryValidator, categoryController.getCategory)
-  .patch(validators.updateCategoryValidator, categoryController.updateCategory)
+  .patch(
+    categoryController.uploadCategoryImage,
+    categoryController.resizeImage,
+    validators.updateCategoryValidator,
+    categoryController.updateCategory
+  )
   .delete(
     validators.deleteCategoryValidator,
     categoryController.deleteCategory

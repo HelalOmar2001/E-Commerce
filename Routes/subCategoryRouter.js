@@ -6,7 +6,10 @@ const router = express.Router({ mergeParams: true });
 
 router
   .route("/")
-  .get(subCategoryController.getSubCategories)
+  .get(
+    subCategoryController.createFilterObj,
+    subCategoryController.getSubCategories
+  )
   .post(
     subCategoryController.setCategoryIdToBody,
     subCategoryValidator.createSubCategoryValidator,

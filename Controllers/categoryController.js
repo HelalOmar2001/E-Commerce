@@ -1,91 +1,68 @@
 const Category = require("../Models/categoryModel");
-const slugify = require("slugify");
-const asyncHandler = require("express-async-handler");
+const handlerFactory = require("./handlerFactory");
 const ApiError = require("../Utils/apiError");
+const multer = require("multer");
+const sharp = require("sharp");
+const { v4: uuidv4 } = require("uuid");
+const asyncHandler = require("express-async-handler");
+
+// 1- Disk Storage Engine (for image uploading)
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads/categories");
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split("/")[1];
+//     cb(null, `category-${uuidv4()}-${Date.now()}.${ext}`);
+//   },
+// });
+
+// 2- Memory Storage Engine (for image processing)
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) cb(null, true);
+  else cb(new ApiError("Not an image! Please upload only images."), false);
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+exports.uploadCategoryImage = upload.single("image");
+
+exports.resizeImage = asyncHandler(async (req, res, next) => {
+  const fileName = `category-${uuidv4()}-${Date.now()}.jpeg`;
+  await sharp(req.file.buffer)
+    .resize(600, 600)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`uploads/categories/${fileName}`);
+
+  // Save Image into our DB
+  req.body.image = fileName;
+  next();
+});
 
 // @desc    Get all categories
 // @route   GET /api/categories
 // @access  Public
-exports.getCategories = asyncHandler(async (req, res) => {
-  const page = req.query.page || 1;
-  const limit = req.query.limit || 10;
-  const skip = (page - 1) * limit;
-  const categories = await Category.find().skip(skip).limit(limit);
-  res.status(200).json({
-    status: "success",
-    results: categories.length,
-    page: page,
-    limit: limit,
-    data: {
-      categories,
-    },
-  });
-});
+exports.getCategories = handlerFactory.getAll(Category);
 
 //@desc     Get category by id
 //@route    GET /api/categories/:id
 //@access   Public
-exports.getCategory = asyncHandler(async (req, res, next) => {
-  const category = await Category.findById(req.params.id);
-  if (!category) {
-    return next(new ApiError("Category not found", 404));
-  }
-  res.status(200).json({
-    status: "success",
-    data: {
-      category,
-    },
-  });
-});
+exports.getCategory = handlerFactory.getOne(Category);
 
 // @desc    Create new category
 // @route   POST /api/categories
 // @access  Private/Admin
-exports.createCategory = asyncHandler(async (req, res) => {
-  const newCategory = await Category.create({
-    name: req.body.name,
-    slug: slugify(req.body.name),
-  });
-  res.status(201).json({
-    status: "success",
-    message: "Create new category",
-    data: {
-      category: newCategory,
-    },
-  });
-});
+exports.createCategory = handlerFactory.createOne(Category);
 
 // @desc    Update category
 // @route   PUT /api/categories/:id
 // @access  Private/Admin
-exports.updateCategory = asyncHandler(async (req, res, next) => {
-  const category = await Category.findByIdAndUpdate(
-    req.params.id,
-    { name: req.body.name, slug: slugify(req.body.name) },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-  if (!category) {
-    return next(new ApiError("Category not found", 404));
-  }
-  res.status(200).json({
-    status: "success",
-    message: "Update category",
-    data: {
-      category,
-    },
-  });
-});
+exports.updateCategory = handlerFactory.updateOne(Category);
 
 // @desc    Delete category
 // @route   DELETE /api/categories/:id
 // @access  Private/Admin
-exports.deleteCategory = asyncHandler(async (req, res, next) => {
-  const category = await Category.findByIdAndDelete(req.params.id);
-  if (!category) {
-    return next(new ApiError("Category not found", 404));
-  }
-  res.status(204).send();
-});
+exports.deleteCategory = handlerFactory.deleteOne(Category);
