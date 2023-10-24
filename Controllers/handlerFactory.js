@@ -50,7 +50,7 @@ exports.createOne = (Model) =>
     const document = await Model.create(req.body);
 
     if (!document) {
-      return next(new ApiError("No document found with that ID", 404));
+      return next(new ApiError("Document is not Created", 404));
     }
 
     res.status(201).json({

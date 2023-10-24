@@ -7,12 +7,22 @@ const router = express.Router();
 router
   .route("/")
   .get(brandController.getBrands)
-  .post(validators.createBrandValidator, brandController.createBrand);
+  .post(
+    brandController.uploadBrandImage,
+    brandController.resizeImage,
+    validators.createBrandValidator,
+    brandController.createBrand
+  );
 
 router
   .route("/:id")
   .get(validators.getBrandValidator, brandController.getBrand)
-  .patch(validators.updateBrandValidator, brandController.updateBrand)
+  .patch(
+    brandController.uploadBrandImage,
+    brandController.resizeImage,
+    validators.updateBrandValidator,
+    brandController.updateBrand
+  )
   .delete(validators.deleteBrandValidator, brandController.deleteBrand);
 
 module.exports = router;

@@ -7,12 +7,22 @@ const router = express.Router();
 router
   .route("/")
   .get(productController.getProducts)
-  .post(validators.createProductValidator, productController.createProduct);
+  .post(
+    productController.uploadProductImages,
+    productController.resizeProductImages,
+    validators.createProductValidator,
+    productController.createProduct
+  );
 
 router
   .route("/:id")
   .get(validators.getProductValidator, productController.getProduct)
-  .patch(validators.updateProductValidator, productController.updateProduct)
+  .patch(
+    productController.uploadProductImages,
+    productController.resizeProductImages,
+    validators.updateProductValidator,
+    productController.updateProduct
+  )
   .delete(validators.deleteProductValidator, productController.deleteProduct);
 
 module.exports = router;

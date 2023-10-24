@@ -11,7 +11,7 @@ exports.createProductValidator = [
     .notEmpty()
     .withMessage("Product title is required")
     .custom((value, { req }) => {
-      req.body.slug = slugify(value);
+      if (value) req.body.slug = slugify(value);
       return true;
     }),
   check("description")

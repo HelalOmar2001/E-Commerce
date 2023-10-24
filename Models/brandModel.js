@@ -20,5 +20,25 @@ const brandSchema = new mongoose.Schema(
   }
 );
 
+const setImageURL = (doc) => {
+  // set image base url + image name
+  if (doc.image) {
+    doc.image = `${process.env.BASE_URL}/categories/${doc.image}`;
+  }
+};
+
+// post init hook to set image url
+// works with find, findOne, findById, findByIdAndUpdate
+brandSchema.post("init", function (doc) {
+  setImageURL(doc);
+});
+
+// post save hook to set image url
+// works with save, create, findOneAndUpdate
+brandSchema.post("save", function (doc) {
+  // set image base url + image name
+  setImageURL(doc);
+});
+
 // 2- Create Model
 module.exports = mongoose.model("Brand", brandSchema);

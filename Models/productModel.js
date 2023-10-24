@@ -84,6 +84,18 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const setImageURL = (doc) => {
+  // set image base url + image name
+  if (doc.imageCover) {
+    doc.imageCover = `${process.env.BASE_URL}/products/${doc.imageCover}`;
+  }
+  if (doc.images) {
+    doc.images = doc.images.map(
+      (image) => `${process.env.BASE_URL}/products/${image}`
+    );
+  }
+};
+
 // Mongoose Query Middleware
 productSchema.pre(/^find/, function (next) {
   this.populate({
@@ -91,6 +103,14 @@ productSchema.pre(/^find/, function (next) {
     select: "name -_id",
   });
   next();
+});
+
+productSchema.post("init", (doc) => {
+  setImageURL(doc);
+});
+
+productSchema.post("save", (doc) => {
+  setImageURL(doc);
 });
 
 module.exports = mongoose.model("Product", productSchema);
