@@ -11,6 +11,7 @@ const categoryRouter = require("./Routes/categoryRouter");
 const subCategoryRouter = require("./Routes/subCategoryRouter");
 const brandRouter = require("./Routes/brandRouter");
 const productRouter = require("./Routes/productRouter");
+const userRouter = require("./Routes/userRouter");
 
 // DB Connection
 dbConnection();
@@ -31,6 +32,7 @@ app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subCategories", subCategoryRouter);
 app.use("/api/v1/brands", brandRouter);
 app.use("/api/v1/products", productRouter);
+app.use("/api/v1/users", userRouter);
 
 app.all("*", (req, res, next) => {
   // const err = new Error(`Can't find ${req.originalUrl} on this server`);
