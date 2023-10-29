@@ -22,14 +22,16 @@ exports.uploadCategoryImage = uploadSingleImage("image");
 // Image Processing
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   const fileName = `category-${uuidv4()}-${Date.now()}.jpeg`;
-  await sharp(req.file.buffer)
-    .resize(600, 600)
-    .toFormat("jpeg")
-    .jpeg({ quality: 90 })
-    .toFile(`uploads/categories/${fileName}`);
+  if (req.file) {
+    await sharp(req.file.buffer)
+      .resize(600, 600)
+      .toFormat("jpeg")
+      .jpeg({ quality: 90 })
+      .toFile(`uploads/categories/${fileName}`);
 
-  // Save Image into our DB
-  req.body.image = fileName;
+    // Save Image into our DB
+    req.body.image = fileName;
+  }
   next();
 });
 
