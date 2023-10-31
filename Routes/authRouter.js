@@ -4,8 +4,10 @@ const validators = require("../Utils/Validators/authValidator");
 
 const router = express.Router();
 
-router.route("/signup").post(validators.signUpValidator, authController.signUp);
-router.route("/login").post(validators.loginValidator, authController.login);
+router.post("/signup", validators.signUpValidator, authController.signUp);
+router.post("/login", validators.loginValidator, authController.login);
 router.post("/forgotPassword", authController.forgotPassword);
+router.post("/verifyResetCode", authController.verifyResetCode);
+router.post("/resetPassword", authController.resetPassword);
 
 module.exports = router;

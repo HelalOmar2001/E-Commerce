@@ -112,3 +112,28 @@ exports.deleteUserValidator = [
   check("id").isMongoId().withMessage("Invalid User ID format"),
   validatorMiddleware,
 ];
+
+exports.updateLoggedUserValidator = [
+  check("name")
+    .isLength({ min: 3 })
+    .withMessage("User name must be at least 3 characters long")
+    .isString()
+    .withMessage("User name must be a string")
+    .custom((value, { req }) => {
+      if (value) req.body.slug = slugify(value);
+      return true;
+    }),
+  check("email")
+    .notEmpty()
+    .withMessage("User email is required")
+    .isEmail()
+    .withMessage("Invalid email format")
+    .custom(async (value) => {
+      const user = await User.findOne({ email: value });
+      if (user) throw new Error("Email already exists");
+    }),
+  check("phone")
+    .isMobilePhone(["ar-EG", "ar-SA"])
+    .withMessage("Invalid phone number format"),
+  validatorMiddleware,
+];
