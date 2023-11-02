@@ -51,7 +51,7 @@ exports.getProducts = handlerFactory.getAll(Product);
 //@desc     Get product by id
 //@route    GET /api/products/:id
 //@access   Public
-exports.getProduct = handlerFactory.getOne(Product);
+exports.getProduct = handlerFactory.getOne(Product, "reviews");
 
 // @desc    Create new product
 // @route   POST /api/products

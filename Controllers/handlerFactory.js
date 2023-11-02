@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const ApiError = require("../Utils/apiError");
 const ApiFeatures = require("../Utils/apiFeatures");
 
-exports.getAll = (Model) =>
+exports.getAll = (Model, populationOpt) =>
   asyncHandler(async (req, res, next) => {
     let filter = {};
     if (req.filterObj) filter = req.filterObj;
@@ -16,7 +16,7 @@ exports.getAll = (Model) =>
       .paginate(documentsCount);
 
     const { mongooseQuery, paginationResult } = apiFeatures;
-    const documents = await mongooseQuery;
+    const documents = await mongooseQuery.populate(populationOpt);
 
     res.status(200).json({
       status: "success",
@@ -28,9 +28,10 @@ exports.getAll = (Model) =>
     });
   });
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, populationOpt) =>
   asyncHandler(async (req, res, next) => {
     let query = Model.findById(req.params.id);
+    if (populationOpt) query = query.populate(populationOpt);
     const document = await query;
 
     if (!document) {
