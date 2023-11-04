@@ -14,6 +14,8 @@ const productRouter = require("./Routes/productRouter");
 const userRouter = require("./Routes/userRouter");
 const authRouter = require("./Routes/authRouter");
 const reviewRouter = require("./Routes/reviewRouter");
+const wishlistRouter = require("./Routes/wishlistRouter");
+const addressRouter = require("./Routes/addressRouter");
 
 // DB Connection
 dbConnection();
@@ -37,6 +39,8 @@ app.use("/api/v1/products", productRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/wishlist", wishlistRouter);
+app.use("/api/v1/addresses", addressRouter);
 
 app.all("*", (req, res, next) => {
   // const err = new Error(`Can't find ${req.originalUrl} on this server`);

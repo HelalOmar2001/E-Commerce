@@ -60,7 +60,7 @@ exports.deleteReviewValidator = [
       if (req.user.role === "user") {
         const review = await Review.findById(value);
         if (!review) throw new Error("This review does not exist");
-        if (review.user.toString() !== req.user._id.toString())
+        if (review.user._id.toString() !== req.user._id.toString())
           throw new Error("You are not allowed to delete this review");
       }
       return true;

@@ -72,7 +72,7 @@ exports.updateOne = (Model) =>
     if (!document) {
       return next(new ApiError("No document found with that ID", 404));
     }
-
+    document.save();
     res.status(200).json({
       status: "success",
       data: {
@@ -87,6 +87,7 @@ exports.deleteOne = (Model) =>
     if (!document) {
       return next(new ApiError("No document found with that ID", 404));
     }
+    document.remove();
     res.status(204).json({
       status: "success",
       data: null,

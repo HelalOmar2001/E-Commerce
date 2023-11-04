@@ -11,7 +11,7 @@ router
   .post(
     authController.protect,
     authController.allowedTo("user"),
-    reviewController.setProductIdToBody,
+    reviewController.setProductIdAndUserIdToBody,
     validators.createReviewValidator,
     reviewController.createReview
   );

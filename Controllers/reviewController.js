@@ -4,8 +4,9 @@ const handlerFactory = require("./handlerFactory");
 const asyncHandler = require("express-async-handler");
 
 // nested route for product review
-exports.setProductIdToBody = (req, res, next) => {
+exports.setProductIdAndUserIdToBody = (req, res, next) => {
   if (!req.body.product) req.body.product = req.params.productId;
+  if (!req.body.user) req.body.user = req.user._id;
   next();
 };
 
