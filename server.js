@@ -7,15 +7,8 @@ dotenv.config({ path: "./config.env" });
 const ApiError = require("./Utils/apiError");
 const globalError = require("./Middlewares/errorMiddleware");
 const dbConnection = require("./Config/database");
-const categoryRouter = require("./Routes/categoryRouter");
-const subCategoryRouter = require("./Routes/subCategoryRouter");
-const brandRouter = require("./Routes/brandRouter");
-const productRouter = require("./Routes/productRouter");
-const userRouter = require("./Routes/userRouter");
-const authRouter = require("./Routes/authRouter");
-const reviewRouter = require("./Routes/reviewRouter");
-const wishlistRouter = require("./Routes/wishlistRouter");
-const addressRouter = require("./Routes/addressRouter");
+
+const mountRoutes = require("./Routes");
 
 // DB Connection
 dbConnection();
@@ -32,15 +25,7 @@ app.use(express.static(`${__dirname}/uploads`));
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 
 // Routes
-app.use("/api/v1/categories", categoryRouter);
-app.use("/api/v1/subCategories", subCategoryRouter);
-app.use("/api/v1/brands", brandRouter);
-app.use("/api/v1/products", productRouter);
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/reviews", reviewRouter);
-app.use("/api/v1/wishlist", wishlistRouter);
-app.use("/api/v1/addresses", addressRouter);
+mountRoutes(app);
 
 app.all("*", (req, res, next) => {
   // const err = new Error(`Can't find ${req.originalUrl} on this server`);
