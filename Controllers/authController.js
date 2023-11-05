@@ -4,8 +4,8 @@ const { promisify } = require("util");
 const crypto = require("crypto");
 
 const asyncHandler = require("express-async-handler");
-const ApiError = require("../utils/ApiError");
-const sendEmail = require("../utils/sendEmail");
+const ApiError = require("../Utils/apiError");
+const sendEmail = require("../Utils/sendEmail");
 const createToken = require("../Utils/createToken");
 
 const User = require("../Models/userModel");

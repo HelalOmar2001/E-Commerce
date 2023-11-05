@@ -1,6 +1,8 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
+const cors = require("cors");
+const compression = require("compression");
 
 dotenv.config({ path: "./config.env" });
 
@@ -15,6 +17,13 @@ dbConnection();
 
 // Express app
 const app = express();
+
+// Enable cors for all requests
+app.use(cors());
+app.options("*", cors());
+
+// Compression middleware for all responses
+app.use(compression());
 
 // Middleware
 app.use(express.json());
