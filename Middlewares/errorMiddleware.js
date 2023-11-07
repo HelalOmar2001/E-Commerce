@@ -1,4 +1,4 @@
-const ApiError = require("../utils/ApiError");
+const ApiError = require("../Utils/apiError");
 
 const globalError = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500; // 500 -> Internal server error
