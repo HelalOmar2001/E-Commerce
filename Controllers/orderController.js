@@ -6,6 +6,8 @@ const ApiError = require("../Utils/apiError");
 const Cart = require("../Models/cartModel");
 const Product = require("../Models/productModel");
 const Order = require("../Models/orderModel");
+const User = require("../Models/userModel");
+const { updateOne } = require("../Models/categoryModel");
 
 // @desc    Create cash order
 // @route   POST /api/v1/orders/:cartId
@@ -179,6 +181,43 @@ exports.getCheckoutSession = asyncHandler(async (req, res, next) => {
   });
 });
 
+createCardOrder = async (session) => {
+  const cartId = session.client_reference_id;
+  const shippingAddress = session.metadata;
+  const orderPrice = session.display_items[0].amount / 100;
+
+  const cart = await Cart.findById(cartId);
+  const user = await User.findOne({ email: session.customer_email });
+
+  // Create order with default payment method "Cash"
+  const order = await Order.create({
+    user: user._id,
+    items: cart.items,
+    shippingPrice,
+    totalPrice: orderPrice,
+    shippingAddress,
+    isPaid: true,
+    paidAt: Date.now(),
+    paymentMethodType: "card",
+  });
+
+  // After creating order, decrease the quantity of each product in the cart, increase the sales of each product in the cart
+  if (order) {
+    const bulkOption = cart.items.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product },
+          update: { $inc: { quantity: -item.quantity, sold: +item.quantity } },
+        },
+      };
+    });
+    await Product.bulkWrite(bulkOption, {});
+
+    // Delete the cart
+    await Cart.findByIdAndDelete(cartId);
+  }
+};
+
 exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   const sig = req.headers["stripe-signature"];
 
@@ -194,6 +233,9 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
   if (event.type === "checkout.session.completed") {
-    console.log("Payment was successful");
+    // Create order
+    createCardOrder(event.data.object);
   }
+
+  res.status(200).json({ received: true });
 });
