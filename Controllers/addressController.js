@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 
-const ApiError = require("../utils/ApiError");
+const ApiError = require("../Utils/apiError");
 const User = require("../Models/userModel");
 
 // @desc    Add address to user's addresses
