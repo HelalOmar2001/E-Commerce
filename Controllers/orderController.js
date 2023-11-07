@@ -193,7 +193,6 @@ const createCardOrder = async (session) => {
   const order = await Order.create({
     user: user._id,
     items: cart.items,
-    shippingPrice,
     totalPrice: orderPrice,
     shippingAddress,
     isPaid: true,
