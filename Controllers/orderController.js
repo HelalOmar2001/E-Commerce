@@ -181,7 +181,7 @@ exports.getCheckoutSession = asyncHandler(async (req, res, next) => {
   });
 });
 
-createCardOrder = async (session) => {
+const createCardOrder = async (session) => {
   const cartId = session.client_reference_id;
   const shippingAddress = session.metadata;
   const orderPrice = session.amount_total / 100;
