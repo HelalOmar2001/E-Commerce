@@ -195,7 +195,6 @@ createCardOrder = async (session) => {
     items: cart.items,
     shippingPrice,
     totalPrice: orderPrice,
-    shippingAddress,
     isPaid: true,
     paidAt: Date.now(),
     paymentMethodType: "card",
