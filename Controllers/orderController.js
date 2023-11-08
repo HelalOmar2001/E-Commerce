@@ -189,30 +189,28 @@ const createCardOrder = async (session) => {
   const cart = await Cart.findById(cartId);
   const user = await User.findOne({ email: session.customer_email });
 
-  // Create order with default payment method "Cash"
+  // 3) Create order with default paymentMethodType card
   const order = await Order.create({
     user: user._id,
     items: cart.items,
-    totalPrice: orderPrice,
     shippingAddress,
+    totalPrice: orderPrice,
+    paymentMethodType: "card",
     isPaid: true,
     paidAt: Date.now(),
-    paymentMethodType: "card",
   });
 
-  // After creating order, decrease the quantity of each product in the cart, increase the sales of each product in the cart
+  // 4) After creating order, decrement product quantity, increment product sold
   if (order) {
-    const bulkOption = cart.items.map((item) => {
-      return {
-        updateOne: {
-          filter: { _id: item.product },
-          update: { $inc: { quantity: -item.quantity, sold: +item.quantity } },
-        },
-      };
-    });
+    const bulkOption = cart.cartItems.map((item) => ({
+      updateOne: {
+        filter: { _id: item.product },
+        update: { $inc: { quantity: -item.quantity, sold: +item.quantity } },
+      },
+    }));
     await Product.bulkWrite(bulkOption, {});
 
-    // Delete the cart
+    // 5) Clear cart depend on cartId
     await Cart.findByIdAndDelete(cartId);
   }
 };
